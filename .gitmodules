@@ -1,3 +1,6 @@
 [submodule "contrib/crglLib"]
 	path = contrib/crglLib
 	url = https://github.com/CristianoBeato/crglLib
+[submodule "contrib/SDL3PlusPlus"]
+	path = contrib/SDL3PlusPlus
+	url = https://github.com/CristianoBeato/SDL3PlusPlus
