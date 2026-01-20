@@ -4,3 +4,6 @@
 [submodule "contrib/SDL3PlusPlus"]
 	path = contrib/SDL3PlusPlus
 	url = https://github.com/CristianoBeato/SDL3PlusPlus
+[submodule "contrib/compressonator"]
+	path = contrib/compressonator
+	url = https://github.com/GPUOpen-Tools/compressonator
