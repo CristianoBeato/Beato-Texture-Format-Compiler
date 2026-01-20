@@ -32,8 +32,7 @@ protected:
     std::string                     m_name;
     BTF_Header_t                    m_header;
     BTF_Footer_t                    m_footer;
-    std::vector<BTF_SubImage_t>     m_imacheChain;
-    size_t                          m_bufferSize;
+    std::vector<BTF_SubImage_t>     m_subimages;
     void*                           m_pixelBuffer;
 };
 
@@ -43,10 +42,10 @@ public:
     BTFWriter( void );
     ~BTFWriter( void );
 
-    bool    Save( const std::string in_path );
+    bool    Save( const std::string &in_path );
 
 private:
-    SDL::IO::Stream     m_writeStram;
+    SDL::IO::Stream     m_writeStream;
 };
 
 class BTFLoader : public BTFTexture
@@ -55,8 +54,10 @@ public:
     BTFLoader( void );
     ~BTFLoader( void );
 
-private:
+    bool    Load( const std::string &in_path );
 
+private:
+    SDL::IO::Stream     m_readStream;
 };
 
 #endif //!__BTF_LOADER_HPP__

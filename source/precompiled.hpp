@@ -42,4 +42,7 @@
 
 #include <crglCore.hpp>
 
+#include "BTFtexture/BTFStructures.hpp"
+#include "BTFtexture/BTFLoader.hpp"
+
 #endif //!__PRECOMPILED_HPP__
