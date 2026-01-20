@@ -1,0 +1,3 @@
+[submodule "contrib/crglLib"]
+	path = contrib/crglLib
+	url = https://github.com/CristianoBeato/crglLib
