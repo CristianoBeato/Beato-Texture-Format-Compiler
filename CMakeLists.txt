@@ -5,7 +5,6 @@ project( Beato-Texture-Format-Compiler )
 ## STD 17
 set( CMAKE_CXX_STANDARD 17 )
 
-
 ##
 ##
 ##
@@ -20,6 +19,12 @@ include_directories( ${CMAKE_SOURCE_DIR}/source )
 include_directories( ${CMAKE_SOURCE_DIR}/contrib/SDL3PlusPlus )
 
 ##
+## glm
+## 
+add_subdirectory( contrib/glm )
+include_directories( ${CMAKE_SOURCE_DIR}/contrib/glm )
+
+##
 ## crglLib 
 ## OpenGL helper lib
 add_subdirectory( contrib/crglLib )
@@ -28,14 +33,14 @@ include_directories( ${CMAKE_SOURCE_DIR}/contrib/crglLib/include )
 ##
 ## compressonator
 ## AMD GPU Open Compressonator lib
-set( OPTION_BUILD_KTX2 OFF ) # Disable KTX Suport
-set( OPTION_BUILD_EXR OFF ) # Disable EXR Suport 
-set( OPTION_BUILD_GUI OFF ) # No Gui
-set( OPTION_CMP_VULKAN OFF ) # No Vulkan 
-set( OPTION_CMP_DIRECTX OFF ) # No Dx
-set( OPTION_CMP_QT OFF ) # No Qt
-set( OPTION_CMP_OPENCV OFF ) # No OpenCV
-add_subdirectory( contrib/compressonator )
+#set( OPTION_BUILD_KTX2 OFF ) # Disable KTX Suport
+#set( OPTION_BUILD_EXR OFF ) # Disable EXR Suport 
+#set( OPTION_BUILD_GUI OFF ) # No Gui
+#set( OPTION_CMP_VULKAN OFF ) # No Vulkan 
+#set( OPTION_CMP_DIRECTX OFF ) # No Dx
+#set( OPTION_CMP_QT OFF ) # No Qt
+#set( OPTION_CMP_OPENCV OFF ) # No OpenCV
+#add_subdirectory( contrib/compressonator )
 
 ## 
 ## 
