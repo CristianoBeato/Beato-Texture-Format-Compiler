@@ -7,3 +7,6 @@
 [submodule "contrib/compressonator"]
 	path = contrib/compressonator
 	url = https://github.com/GPUOpen-Tools/compressonator
+[submodule "contrib/glm"]
+	path = contrib/glm
+	url = https://github.com/g-truc/glm

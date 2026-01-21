@@ -25,6 +25,18 @@ include_directories( ${CMAKE_SOURCE_DIR}/contrib/SDL3PlusPlus )
 add_subdirectory( contrib/crglLib )
 include_directories( ${CMAKE_SOURCE_DIR}/contrib/crglLib/include )
 
+##
+## compressonator
+## AMD GPU Open Compressonator lib
+set( OPTION_BUILD_KTX2 OFF ) # Disable KTX Suport
+set( OPTION_BUILD_EXR OFF ) # Disable EXR Suport 
+set( OPTION_BUILD_GUI OFF ) # No Gui
+set( OPTION_CMP_VULKAN OFF ) # No Vulkan 
+set( OPTION_CMP_DIRECTX OFF ) # No Dx
+set( OPTION_CMP_QT OFF ) # No Qt
+set( OPTION_CMP_OPENCV OFF ) # No OpenCV
+add_subdirectory( contrib/compressonator )
+
 ## 
 ## 
 ## Program Source
