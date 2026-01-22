@@ -29,7 +29,7 @@ public:
     ~BTFTexture( void );
 
     std::shared_ptr<gli::texture>   GetTexture( void ) const;
-    void                            SetTexture( const std::shared_ptr<gli::texture> &in_source );     
+    bool                            SetTexture( const std::shared_ptr<gli::texture> &in_source );     
 
 protected:
     std::string                     m_name;
@@ -38,9 +38,7 @@ protected:
     std::vector<BTF_SubImage_t>     m_subimages;
     void*                           m_pixelBuffer;
 
-private:
-    void    UpLoadData( );
-    void    DownLoadData( );
+    void    Clear( void );
 };
 
 class BTFWriter : public BTFTexture

@@ -22,9 +22,6 @@
 #ifndef __BTF_STRUCTURES_HPP__
 #define __BTF_STRUCTURES_HPP__
 
-inline constexpr uint32_t BTF_MAGIC = 0x00465442u; // "BTF\0"
-inline constexpr uint32_t BTF_VERSION = 10; // 1.0 
-
 /// @brief image pixel depth format
 enum format_t : uint16_t
 {
@@ -95,7 +92,9 @@ struct BTF_Footer_t
     uint32_t nameOffset;    // string opcional no fim do arquivo
 };
 
-inline size_t BTF_HEADER_SIZE = sizeof( BTF_Header_t );
-inline size_t BTF_SUBIMAGE_SIZE = sizeof( BTF_SubImage_t );
+inline constexpr uint32_t   BTF_MAGIC = { 'BTF\0' }; /// 0x00465442u; // "BTF\0"
+inline constexpr uint32_t   BTF_VERSION = 10; // 1.0 
+inline constexpr size_t     BTF_HEADER_SIZE = sizeof( BTF_Header_t );
+inline constexpr size_t     BTF_SUBIMAGE_SIZE = sizeof( BTF_SubImage_t );
 
 #endif //!__BTF_STRUCTURES_HPP__

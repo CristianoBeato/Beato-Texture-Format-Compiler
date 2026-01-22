@@ -2,6 +2,33 @@
 #include "precompiled.hpp"
 #include "BTFLoader.hpp"
 
+#include <iostream>
+#include <SDL3/SDL.h>
+
+// alignment DEVE ser potência de 2 
+constexpr uint32_t Align(uint32_t value, uint32_t alignment) { return (value + alignment - 1) & ~(alignment - 1); }
+
+static constexpr uint64_t CRC64_POLY = 0x42F0E1EBA9EA3693ULL;
+
+static uint64_t CRC64(const void* data, size_t size)
+{
+    uint64_t crc = 0xFFFFFFFFFFFFFFFFULL;
+    const uint8_t* p = (const uint8_t*)data;
+
+    for (size_t i = 0; i < size; ++i)
+    {
+        crc ^= uint64_t(p[i]) << 56;
+        for (int b = 0; b < 8; ++b)
+        {
+            crc = (crc & 0x8000000000000000ULL)
+                ? (crc << 1) ^ CRC64_POLY
+                : (crc << 1);
+        }
+    }
+
+    return crc ^ 0xFFFFFFFFFFFFFFFFULL;
+}
+
 static inline bool GLI_IsRGB( const gli::format in_format )
 {
     switch ( in_format )
@@ -318,63 +345,90 @@ std::shared_ptr<gli::texture> BTFTexture::GetTexture(void) const
 
     /// Create texture objec and alloc memory
     texture = std::make_shared<gli::texture>( target, format, extent, layers, faces, levels );
-
-    
     
     return texture;
 }
 
-void BTFTexture::SetTexture( const std::shared_ptr<gli::texture> &in_source )
+bool BTFTexture::SetTexture( const std::shared_ptr<gli::texture> &in_source )
 {
-    gli::target                     target;
-    gli::format                     format;
-    gli::texture::extent_type       extent;   
-    size_t                          layers;
-    size_t                          faces = 1;
-    size_t                          levels;
+    uint32_t index = 0;
+    uint32_t pixelOffset = 0;
 
-    // get source target
-    target = in_source->target();
+    if ( !in_source )
+        return false;
 
-    // get source texel format
-    format = in_source->format();
-
-    // get source bounds
-    extent = in_source->extent();
-
-    // get source num layers 
-    layers = in_source->layers();
-
-    faces = in_source->faces();
-
-    levels = in_source->levels();
+    Clear();
 
     /// prepare BTF Header
     m_header.magic = BTF_MAGIC;
     m_header.version = BTF_VERSION;
     m_header.headerSize = BTF_HEADER_SIZE;
     m_header.imageFlags = 0;
+    m_header.layerCount = static_cast<uint16_t>( in_source->faces() * in_source->layers() );
+    m_header.mipCount   = static_cast<uint16_t>( in_source->levels() );
+    m_header.dataAlignment = 256;
     
-    /// set the texture target
-    m_header.imageFlags = TextureTypeFlags( target );
+    /// set the texture target type
+    m_header.imageFlags = TextureTypeFlags( in_source->target() );
     
     /// get the texel format 
-    m_header.pixelFormat = GliFormatToBTF( format );
+    m_header.pixelFormat = GliFormatToBTF( in_source->format() );
 
     ///
-    if ( GLI_IsRGB( format ) )
+    if ( GLI_IsRGB( in_source->format() ) )
         m_header.imageFlags |= SRGB;    // sRGB colors 
-
-    // store layers and levels
-    m_header.layerCount = layers;
-    m_header.mipCount = levels;
     
     // prepare subimage array 
-    m_subimages.resize( layers * levels );
+    m_subimages.resize( m_header.layerCount * m_header.mipCount );
 
     m_header.subImageTableOffset = BTF_HEADER_SIZE;
-    m_header.pixelDataOffset = BTF_SUBIMAGE_SIZE * layers * levels + BTF_HEADER_SIZE;
+    m_header.pixelDataOffset = Align( m_header.subImageTableOffset + m_subimages.size() * BTF_SUBIMAGE_SIZE, m_header.dataAlignment );
+    m_header.pixelBufferSize = in_source->size();
 
+    /// from file start offset of the pixel buffer
+    pixelOffset = m_header.pixelDataOffset;
+    for (uint32_t face  = 0; face  < in_source->faces(); ++face)
+    {
+        for (uint32_t layer = 0; layer < in_source->layers(); ++layer)
+        {
+            for (uint32_t mip   = 0; mip   < in_source->levels();  ++mip)
+            {
+                auto extent = in_source->extent( mip );
+                size_t size = in_source->size( mip );
+            
+                pixelOffset = Align( pixelOffset, m_header.dataAlignment );
+            
+                auto& si    = m_subimages[index++];
+                si.width    = extent.x;
+                si.height   = extent.y;
+                si.depth    = extent.z;
+                si.offset   = pixelOffset;
+                si.size     = static_cast<uint32_t>( size );
+                pixelOffset += si.size;
+            }
+        }
+    }
+
+    /// get the pixel buffer size
+    m_header.pixelBufferSize = pixelOffset - m_header.pixelDataOffset;
+    m_pixelBuffer = SDL_malloc( m_header.pixelBufferSize );
+
+    index = 0;
+    for ( uint32_t face = 0; face  < in_source->faces(); ++face)
+    {
+        for ( uint32_t layer = 0; layer < in_source->layers(); ++layer)
+        {
+            for ( uint32_t mip = 0; mip < in_source->levels(); ++mip)
+            {
+                auto& si = m_subimages[index++];
+                const void* data = in_source->data( layer, face, mip );
+                /// copy image level to the pixel buffer 
+                std::memcpy( static_cast<bytes>( m_pixelBuffer ) + ( si.offset - m_header.pixelDataOffset ) , data, si.size );
+            }
+        }
+    }
+
+    return true;
 }
 
 BTFWriter::BTFWriter( void ) : BTFTexture()
@@ -390,20 +444,27 @@ bool BTFWriter::Save( const std::string &in_path )
     if ( !m_writeStream.FromFile( in_path.c_str(), "wb" ) )
         return false;
 
-    // define header constants 
-    m_header.magic = BTF_MAGIC;
-    m_header.version = BTF_VERSION;
-    m_header.headerSize = BTF_HEADER_SIZE;
-
-    /// write file header
+    ///
+    /// write the header
     m_writeStream.Write( &m_header, sizeof( m_header ) );
 
-    /// write the imag
+    ///
+    /// write the subimage headers
     m_writeStream.Write( m_subimages.data(), m_subimages.size() * BTF_SUBIMAGE_SIZE );
 
+    ///
+    /// Padding till pixelDataOffset
+    m_writeStream.Seek( m_header.pixelDataOffset, SDL_IO_SEEK_SET );
+
+    ///
     /// write pixel buffer
     m_writeStream.Write( m_pixelBuffer, m_header.pixelBufferSize );
 
+    ///
+    /// hash pixel buffer 
+    m_footer.contentHash = CRC64( m_pixelBuffer, m_header.pixelBufferSize );
+
+    ///
     /// write footer 
     m_writeStream.Write( &m_footer, sizeof( m_footer ) );
     

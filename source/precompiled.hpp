@@ -53,6 +53,9 @@
 
 #include <crglCore.hpp>
 
+typedef unsigned char   byte;
+typedef unsigned char*  bytes;
+
 #include "BTFtexture/BTFStructures.hpp"
 #include "BTFtexture/BTFLoader.hpp"
 
