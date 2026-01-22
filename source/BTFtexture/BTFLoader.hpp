@@ -28,6 +28,9 @@ public:
     BTFTexture( void );
     ~BTFTexture( void );
 
+    gli::texture    GetTexture( void ) const;
+    void            SetTexture( const gli::texture &in_source );     
+
 protected:
     std::string                     m_name;
     BTF_Header_t                    m_header;
