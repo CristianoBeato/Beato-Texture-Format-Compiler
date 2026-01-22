@@ -61,9 +61,9 @@ enum flags_t : uint32_t
 typedef struct BTF_Header_s
 {
     uint32_t magic = 0;         // 'BTF\0'
-    uint32_t imageFlags = 0;    //
     uint16_t version = 0;       // versionamento é obrigatório
     uint16_t headerSize = 0;    // 
+    uint32_t imageFlags = 0;    //
 
     // the format suported
     uint16_t pixelFormat = 0;   //

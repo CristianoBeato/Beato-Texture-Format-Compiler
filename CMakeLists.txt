@@ -21,8 +21,16 @@ include_directories( ${CMAKE_SOURCE_DIR}/contrib/SDL3PlusPlus )
 ##
 ## glm
 ## 
+set( GLM_BUILD_TESTS OFF )
 add_subdirectory( contrib/glm )
 include_directories( ${CMAKE_SOURCE_DIR}/contrib/glm )
+
+##
+## gli
+## OpenGL Image (GLI) 
+set( GLI_TEST_ENABLE OFF )
+add_subdirectory( contrib/gli )
+include_directories( ${CMAKE_SOURCE_DIR}/contrib/gli )
 
 ##
 ## crglLib 
@@ -52,6 +60,11 @@ set( BTF_TEXTURE
     ${CMAKE_SOURCE_DIR}/source/BTFtexture/BTFLoader.hpp
     )
 
+set( IMAGE_LOADER
+    ${CMAKE_SOURCE_DIR}/source/imageLoader/imageLoader.cpp
+    ${CMAKE_SOURCE_DIR}/source/imageLoader/imageLoader.hpp
+    )
+
 set( MAIN_SOURCES 
     ${CMAKE_SOURCE_DIR}/source/precompiled.hpp
     ${CMAKE_SOURCE_DIR}/source/main.cpp
@@ -62,6 +75,7 @@ set( MAIN_SOURCES
 
 set( SOURCES
     ${BTF_TEXTURE}
+    ${IMAGE_LOADER}
     ${MAIN_SOURCES}
     ) 
 
@@ -69,5 +83,5 @@ set( SOURCES
 ##
 ## Executable 
 add_executable( BTF-Edit ${SOURCES} )
-target_link_libraries( BTF-Edit PUBLIC crglLib SDL3::SDL3 SDL3_image::SDL3_image SDL3_ttf::SDL3_ttf )
+target_link_libraries( BTF-Edit PUBLIC crglLib glm SDL3::SDL3 SDL3_image::SDL3_image SDL3_ttf::SDL3_ttf )
 target_precompile_headers( BTF-Edit PUBLIC "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/source/precompiled.hpp>" )

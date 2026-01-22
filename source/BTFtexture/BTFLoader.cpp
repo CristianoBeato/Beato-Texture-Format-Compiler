@@ -24,7 +24,7 @@ static inline bool GLI_IsRGB( const gli::format in_format )
     return false;
 }
 
-static inline  gli::target GliTextureType( const uint32_t in_flags )
+static inline  gli::target GliTextureTarget( const uint32_t in_flags )
 {
     /// check if are a image array
     if ( ( in_flags & ARRAY ) == ARRAY )
@@ -266,13 +266,115 @@ BTFTexture::~BTFTexture( void )
 {
 }
 
-gli::texture BTFTexture::GetTexture(void) const
+std::shared_ptr<gli::texture> BTFTexture::GetTexture(void) const
 {
-    return gli::texture();
+    gli::target                     target;
+    gli::format                     format;
+    gli::texture::extent_type       extent;   
+    size_t                          layers;
+    size_t                          faces = 1;
+    size_t                          levels;
+    std::shared_ptr<gli::texture>   texture;
+    
+    /// get texture target
+    target = GliTextureTarget( m_header.imageFlags );
+
+    /// get texel format
+    format = BTFFormatToGLI( ( format_t )m_header.pixelFormat, ( ( m_header.imageFlags ) == SRGB ) );
+
+    /// get the image base bounds
+    if ( ( m_header.imageFlags & IMAGE1D ) == IMAGE1D )
+    {
+        extent.x = m_subimages[0].width;
+        extent.y = 1;
+        extent.z = 1;
+    }
+    else if ( ( m_header.imageFlags & IMAGE2D ) == IMAGE2D )
+    {
+        extent.x = m_subimages[0].width;
+        extent.y = m_subimages[0].height;
+        extent.z = 1;
+    }
+    else if ( ( m_header.imageFlags & IMAGE3D ) == IMAGE3D )
+    {
+        extent.x = m_subimages[0].width;
+        extent.y = m_subimages[0].height;
+        extent.z = m_subimages[0].depth;
+    }
+    else if ( ( m_header.imageFlags & CUBEMAP ) == CUBEMAP )
+    {
+        faces = 6;
+        extent.x = m_subimages[0].width;
+        extent.y = m_subimages[0].width;
+        extent.z = 1;
+    }
+
+    /// if is a multi layer texture
+    if ( ( m_header.imageFlags & ARRAY ) == ARRAY )
+        layers = m_header.layerCount;
+
+    /// mip map level number
+    levels = m_header.mipCount;
+
+    /// Create texture objec and alloc memory
+    texture = std::make_shared<gli::texture>( target, format, extent, layers, faces, levels );
+
+    
+    
+    return texture;
 }
 
-void BTFTexture::SetTexture( const gli::texture &in_source )
+void BTFTexture::SetTexture( const std::shared_ptr<gli::texture> &in_source )
 {
+    gli::target                     target;
+    gli::format                     format;
+    gli::texture::extent_type       extent;   
+    size_t                          layers;
+    size_t                          faces = 1;
+    size_t                          levels;
+
+    // get source target
+    target = in_source->target();
+
+    // get source texel format
+    format = in_source->format();
+
+    // get source bounds
+    extent = in_source->extent();
+
+    // get source num layers 
+    layers = in_source->layers();
+
+    faces = in_source->faces();
+
+    levels = in_source->levels();
+
+    /// prepare BTF Header
+    m_header.magic = BTF_MAGIC;
+    m_header.version = BTF_VERSION;
+    m_header.headerSize = BTF_HEADER_SIZE;
+    m_header.imageFlags = 0;
+    
+    /// set the texture target
+    m_header.imageFlags = TextureTypeFlags( target );
+    
+    /// get the texel format 
+    m_header.pixelFormat = GliFormatToBTF( format );
+
+    ///
+    if ( GLI_IsRGB( format ) )
+        m_header.imageFlags |= SRGB;    // sRGB colors 
+
+    // store layers and levels
+    m_header.layerCount = layers;
+    m_header.mipCount = levels;
+    
+    // prepare subimage array 
+    m_subimages.resize( layers * levels );
+
+    m_header.subImageTableOffset = BTF_HEADER_SIZE;
+    m_header.pixelDataOffset = BTF_SUBIMAGE_SIZE * layers * levels + BTF_HEADER_SIZE;
+
 }
 
 BTFWriter::BTFWriter( void ) : BTFTexture()

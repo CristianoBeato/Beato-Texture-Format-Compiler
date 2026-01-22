@@ -30,6 +30,7 @@
 
 #include <iostream>
 #include <exception>
+#include <memory>
 #include <string>
 #include <vector>
 
