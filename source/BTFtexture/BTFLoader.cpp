@@ -295,6 +295,7 @@ BTFTexture::~BTFTexture( void )
 
 std::shared_ptr<gli::texture> BTFTexture::GetTexture(void) const
 {
+    uint32_t                        index = 0;
     gli::target                     target;
     gli::format                     format;
     gli::texture::extent_type       extent;   
@@ -346,6 +347,19 @@ std::shared_ptr<gli::texture> BTFTexture::GetTexture(void) const
     /// Create texture objec and alloc memory
     texture = std::make_shared<gli::texture>( target, format, extent, layers, faces, levels );
     
+    for (uint32_t face  = 0; face  < faces; ++face)
+    {
+        for (uint32_t layer = 0; layer < layers; ++layer)
+        {
+            for (uint32_t mip   = 0; mip   < levels; ++mip)
+            {
+                const BTF_SubImage_t& si = m_subimages[index++];
+                // copy image content
+                std::memcpy( texture->data(layer, face, mip), static_cast<bytes>( m_pixelBuffer ) + si.offset - m_header.pixelDataOffset, si.size );
+            }
+        }
+    }
+
     return texture;
 }
 
