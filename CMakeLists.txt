@@ -1,3 +1,24 @@
+##
+##===========================================================================================
+##    This file is part of BTFEdit BTF Texture format framework.
+##
+##    Copyright (c) 2026 Cristiano B. Santos <cristianobeato_dm@hotmail.com>
+##    Contributor(s): none yet.
+##
+##-------------------------------------------------------------------------------------------
+##
+## This file is part of the BTFEdit library and is licensed under the
+## MIT License with Attribution Requirement.
+##
+## You are free to use, modify, and distribute this file (even commercially),
+## as long as you give credit to the original author:
+##
+##     “Based on BTFEdit by Cristiano Beato – https://github.com/CristianoBeato”
+##
+## For full license terms, see the LICENSE file in the root of this repository.
+##===============================================================================================
+##
+
 cmake_minimum_required( VERSION 3.13 )
 
 project( Beato-Texture-Format-Compiler )

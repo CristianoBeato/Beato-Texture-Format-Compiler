@@ -7,7 +7,7 @@
 
 -------------------------------------------------------------------------------------------
 
- This file is part of the crglLib library and is licensed under the
+ This file is part of the BTFEdit library and is licensed under the
  MIT License with Attribution Requirement.
 
  You are free to use, modify, and distribute this file (even commercially),
