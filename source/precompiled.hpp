@@ -22,18 +22,6 @@
 #ifndef __PRECOMPILED_HPP__
 #define __PRECOMPILED_HPP__
 
-#include <cstdint>
-#include <cstdlib>
-#include <cstdarg>
-#include <cstddef>
-#include <cstdio>
-
-#include <iostream>
-#include <exception>
-#include <memory>
-#include <string>
-#include <vector>
-
 #include <SDL3/SDL_stdinc.h>
 
 #include <SDL3/SDL_window.hpp>
@@ -41,15 +29,8 @@
 #include <SDL3/SDL_thread.hpp>
 #include <SDL3/SDL_mutex.hpp>
 
-#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
-#include <gli/type.hpp>
-#include <gli/gli.hpp>
-#include <gli/image.hpp>
-#include <gli/format.hpp>
-#include <gli/convert.hpp>
 
 #include <crglCore.hpp>
 

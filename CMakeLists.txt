@@ -84,4 +84,20 @@ set( SOURCES
 ## Executable 
 add_executable( BTF-Edit ${SOURCES} )
 target_link_libraries( BTF-Edit PUBLIC crglLib glm SDL3::SDL3 SDL3_image::SDL3_image SDL3_ttf::SDL3_ttf )
-target_precompile_headers( BTF-Edit PUBLIC "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/source/precompiled.hpp>" )
+target_precompile_headers( BTF-Edit 
+    PUBLIC 
+        <cstdint>
+        <cstdlib>
+        <cstdarg>
+        <cstddef>
+        <cstdio>
+        <iostream>
+        <exception>
+        <memory>
+        <string>
+        <vector>
+        <glm/glm.hpp>
+        <gli/gli.hpp>
+
+    PRIVATE
+        "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/source/precompiled.hpp>" )
