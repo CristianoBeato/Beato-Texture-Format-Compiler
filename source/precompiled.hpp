@@ -23,15 +23,21 @@
 #define __PRECOMPILED_HPP__
 
 #include <SDL3/SDL_stdinc.h>
-
 #include <SDL3/SDL_window.hpp>
 #include <SDL3/SDL_iostream.hpp>
 #include <SDL3/SDL_thread.hpp>
 #include <SDL3/SDL_mutex.hpp>
 
+#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+// TODO: fix GLI
+#if GLM_VERSION_MAJOR > 0 && GLM_VERSION_MINOR > 9
+#	define GLM_STATIC_ASSERT(x, message) static_assert(x, message)
+#endif //GLM_LANG
+
+#include <gli/gli.hpp>
 #include <crglCore.hpp>
 
 typedef unsigned char   byte;

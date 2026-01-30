@@ -25,22 +25,24 @@
 /// @brief image pixel depth format
 enum format_t : uint16_t
 {
-    FORMAT_RED8U,   // 8  bits unsigned 1 component ( red only )
-    FORMAT_RED16U,  // 16 bits unsigned 1 component ( rend only ) 
-    FORMAT_RG8U,    // 8  bits unsigned 2 components ( red green ) 
+    FORMAT_RED8U,   // 8  bits unsigned 1 component ( red only ) ( Suport sRGB )
+    FORMAT_RED16U,  // 16 bits unsigned 1 component ( red only ) 
+    FORMAT_RG8U,    // 8  bits unsigned 2 components ( red green ) ( Suport sRGB )
     FORMAT_RG16U,   // 16 bits unsigned 2 components ( red green ) 
-    FORMAT_RGBA8U,  // 8  bits unsigned 4 components ( RGB + Alpha )
+    FORMAT_RGBA8U,  // 8  bits unsigned 4 components ( RGB + Alpha ) ( Suport sRGB )
     FORMAT_RGBA16U, // 16 bits unsigned 4 components ( RGB + Alpha )
     FORMAT_RGBA16F, // 16 bits half float 4 components ( RGB + Alpha )
     FORMAT_RGBA32U, // 32 bits unsigned 4 components ( RGB + Alpha )
     FORMAT_RGBA32F, // 32 bits true float 4 components ( RGB + Alpha )
-    FORMAT_BC1,     // 8 bytes 4×4 block compression 3 components ( RGB )
-    FORMAT_BC3,     // BC3 stores RGBA data, using BC1 for the RGB part and BC4 for the alpha part,
-    FORMAT_BC5,     // 
-    FORMAT_BC7,     //
-    FORMAT_BC6H,    //
-    FORMAT_ETC2,    //
-    FORMAT_EAC      //
+    FORMAT_BC1,     // 4 bits per pixel (bpp), 4×4 block, RGB (no Alpha), 6:1 compression ratio ( DXT1 ) ( Suport sRGB )
+    FORMAT_BC3,     // 8 bits per pixel (bpp), 4×4 block, RGBA, high quality Alpha (interpolated) ( DXT5 ) ( Suport sRGB )
+    FORMAT_BC5,     // 8 bits per pixel (bpp), 4×4 block, 2 components ( RG ), ideal for Normal Maps ( RGTC2 ) 
+    FORMAT_BC7,     // 8 bits per pixel (bpp), 4×4 block, high quality RGBA, reduces artifacts in gradients ( BPTC ) ( Suport sRGB )
+    FORMAT_BC6H,    // 8 bits per pixel (bpp), 4×4 block, RGB Half Float ( HDR support )
+    FORMAT_ETC2,    // 8 bits per pixel (bpp), 4×4 block, 4 components ( RGBA ) ( Suport sRGB )
+    FORMAT_EAC,     // 8 bits per pixel (bpp), 4×4 block, 2 components ( RG ), high precision (11 bits per channel)
+    FORMAT_COUNT,
+    FORMAT_NONE = 0xFFFF,
 };
 
 enum flags_t : uint32_t

@@ -116,9 +116,8 @@ target_precompile_headers( BTF-Edit
         <exception>
         <memory>
         <string>
+        <sstream>
         <vector>
-        <glm/glm.hpp>
-        <gli/gli.hpp>
-
+        <iomanip>
     PRIVATE
         "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/source/precompiled.hpp>" )

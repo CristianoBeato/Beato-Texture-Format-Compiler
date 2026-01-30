@@ -28,7 +28,7 @@ public:
     crMainApp( void );
     ~crMainApp( void );
 
-    void    Run( const std::vector<std::string> &in_cmdargs );
+    void    Run( std::stringstream &in_cmdargs );
 
 private:
     uint8_t         m_state;
@@ -36,11 +36,23 @@ private:
     SDL::Thread     m_renderThread;
     gl::Context*    m_renderContext;
 
+    /// @brief Initialize GUI 
+    void    Init( void );
+
+    /// @brief Release GUI
+    void    Release( void );
+
     /// @brief retrieve input events
     void    Event( void );
     
     /// @brief perform the rendering
     void    Render( void );
+    
+    /// @brief
+    void    PrintHelpText( void );
+
+    /// @brief 
+    void    ListFormatText( void );
 
     static int RendererEntryPoint( void* in_entry );
 
