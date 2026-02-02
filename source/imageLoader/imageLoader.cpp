@@ -297,7 +297,7 @@ uint16_t crImageLoader::LoadImage3D( const std::vector<std::string> &in_paths, c
         extent.y = height;
         m_texture = std::make_shared<gli::texture2d_array>( format, extent, layers, 1 );
 
-        for (size_t layer = 0; layers < layers; layers++)
+        for (size_t layer = 0; layer < layers; layer++)
         {
             auto surface = surfaces[layer];
 
