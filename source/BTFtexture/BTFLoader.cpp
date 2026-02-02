@@ -66,6 +66,9 @@ static inline bool GLI_IsRGB( const gli::format in_format )
     case gli::FORMAT_RGBA_ETC2_SRGB_BLOCK16:
     case gli::FORMAT_RGBA_BP_SRGB_BLOCK16:
         return true;
+
+    default:
+        break;
     };
 
     return false;
@@ -222,6 +225,8 @@ static inline format_t GliFormatToBTF( const gli::format in_gliFormat )
     default:
         break;
     }
+
+    return f;
 } 
 
 static inline gli::format BTFFormatToGLI( const format_t in_brfFormat, const bool in_SRGB )
@@ -296,6 +301,8 @@ static inline gli::format BTFFormatToGLI( const format_t in_brfFormat, const boo
     default:
         break;
     }
+
+    return f;
 }
 
 BTFTexture::BTFTexture( void ) : m_pixelBuffer( nullptr )
@@ -438,7 +445,7 @@ bool BTFTexture::SetTexture( const std::shared_ptr<gli::texture> &in_source )
 
     /// get the pixel buffer size
     m_header.pixelBufferSize = pixelOffset - m_header.pixelDataOffset;
-    m_pixelBuffer = SDL_malloc( m_header.pixelBufferSize );
+    m_pixelBuffer = SDL_aligned_alloc( m_header.dataAlignment, m_header.pixelBufferSize );
 
     index = 0;
     for ( uint32_t face = 0; face  < in_source->faces(); ++face)
@@ -458,12 +465,22 @@ bool BTFTexture::SetTexture( const std::shared_ptr<gli::texture> &in_source )
     return true;
 }
 
+void BTFTexture::Clear(void)
+{
+    if ( m_pixelBuffer !=  nullptr )
+    {
+        SDL_aligned_free( m_pixelBuffer );
+        m_pixelBuffer = nullptr;
+    }
+}
+
 BTFWriter::BTFWriter( void ) : BTFTexture()
 {
 }
 
 BTFWriter::~BTFWriter( void )
 {
+    Clear();
 }
 
 bool BTFWriter::Save( const std::string &in_path )
