@@ -167,54 +167,55 @@ static inline format_t GliFormatToBTF( const gli::format in_gliFormat )
             f = FORMAT_RG16U;
             break;
             
-        // TODO > convert to RGB + x paded
-        case gli::FORMAT_RGB8_UNORM_PACK8:  
-        case gli::FORMAT_RGB8_SRGB_PACK8:
-            f = FORMAT_RGBX8U;
-            break;
-
         case gli::FORMAT_RGBA8_UNORM_PACK8:
         case gli::FORMAT_RGBA8_SRGB_PACK8:
             f = FORMAT_RGBA8U;
             break;
 
-        case gli::FORMAT_RGB16_SNORM_PACK16:
-            f = FORMAT_RGBX16U;
-            break;
         case gli::FORMAT_RGBA16_SNORM_PACK16:
             f = FORMAT_RGBA16U;
             break;
+
         case gli::FORMAT_RGBA16_SFLOAT_PACK16:
             f = FORMAT_RGBA16F;
             break;
+
         case gli::FORMAT_RGBA32_UINT_PACK32:
             f = FORMAT_RGBA32U;
             break;
+
         case gli::FORMAT_RGBA32_SFLOAT_PACK32:
             f = FORMAT_RGBA32F;
             break;
+
         case gli::FORMAT_RGB_DXT1_UNORM_BLOCK8:
         case gli::FORMAT_RGB_DXT1_SRGB_BLOCK8:
             f = FORMAT_BC1;
             break;
+
         case gli::FORMAT_RGBA_DXT5_UNORM_BLOCK16:
         case gli::FORMAT_RGBA_DXT5_SRGB_BLOCK16:
             f = FORMAT_BC3;
             break;
+
         case gli::FORMAT_RG_ATI2N_UNORM_BLOCK16:
             f = FORMAT_BC5;
             break;
+
         case gli::FORMAT_RGBA_BP_UNORM_BLOCK16:
         case gli::FORMAT_RGBA_BP_SRGB_BLOCK16:
             f = FORMAT_BC7;
             break;
+
         case gli::FORMAT_RGB_BP_SFLOAT_BLOCK16:
             f = FORMAT_BC6H;
             break;
+
         case gli::FORMAT_RGBA_ETC2_UNORM_BLOCK8:
         case gli::FORMAT_RGBA_ETC2_SRGB_BLOCK8:
             f = FORMAT_ETC2;
             break;
+
         case gli::FORMAT_RG_EAC_UNORM_BLOCK16:
             f = FORMAT_EAC;
             break;    
@@ -244,16 +245,8 @@ static inline gli::format BTFFormatToGLI( const format_t in_brfFormat, const boo
             f = gli::FORMAT_RG16_UNORM_PACK16;
             break;
 
-        case FORMAT_RGBX8U:
-            f = ( in_SRGB ) ? gli::FORMAT_RGB8_SRGB_PACK8 : gli::FORMAT_RGB8_UNORM_PACK8;
-            break;
-
         case FORMAT_RGBA8U:
             f = ( in_SRGB ) ? gli::FORMAT_RGBA8_SRGB_PACK8 : gli::FORMAT_RGBA8_UNORM_PACK8;
-            break;
-
-        case FORMAT_RGBX16U:
-            f = gli::FORMAT_RGB16_UNORM_PACK16;
             break;
 
         case FORMAT_RGBA16U:
