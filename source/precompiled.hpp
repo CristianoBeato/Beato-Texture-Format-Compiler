@@ -32,11 +32,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-// TODO: fix GLI
-#if GLM_VERSION_MAJOR > 0 && GLM_VERSION_MINOR > 9
-#	define GLM_STATIC_ASSERT(x, message) static_assert(x, message)
-#endif //GLM_LANG
-
 #include <gli/gli.hpp>
 #include <crglCore.hpp>
 
