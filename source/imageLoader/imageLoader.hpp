@@ -22,7 +22,7 @@
 #ifndef __IMAGE_LOADER_HPP__
 #define __IMAGE_LOADER_HPP__
 
-enum error_t : uint16_t
+enum err_t : uint16_t
 {
     ERR_SUCCES = 0,                 // no error
     ERR_UNKNOW,                     // some error 
