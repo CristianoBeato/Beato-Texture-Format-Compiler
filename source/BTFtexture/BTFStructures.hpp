@@ -55,6 +55,8 @@ enum flags_t : uint32_t
     SRGB    = 0x0020,   /// sRGB color range
 };
 
+#pragma pack( push, 1 )
+
 typedef struct BTF_Header_s
 {
     uint32_t magic = 0;         // 'BTF\0'
@@ -76,7 +78,7 @@ typedef struct BTF_Header_s
     uint32_t dataAlignment = 0; // ex: 16 ou 256
 } BTF_Header_t; 
 
-typedef struct alignas( 16 ) BTF_SubImage_s 
+typedef struct BTF_SubImage_s 
 {
     uint32_t    width = 0;
     uint32_t    height = 0;
@@ -88,13 +90,20 @@ typedef struct alignas( 16 ) BTF_SubImage_s
 
 struct BTF_Footer_t
 {
-    uint64_t contentHash;   // CRC64 ou xxHash
-    uint32_t nameOffset;    // string opcional no fim do arquivo
+    /// @brief a hash CRC64 of the pixel buffer, to ensure source integrity
+    uint64_t contentHash;   
+    // optional comment string legenth
+    uint32_t nameOffset;    
 };
+#pragma pack( pop )
+
 
 inline constexpr uint32_t   BTF_MAGIC = { 'BTF\0' }; /// 0x00465442u; // "BTF\0"
 inline constexpr uint32_t   BTF_VERSION = 10; // 1.0 
 inline constexpr size_t     BTF_HEADER_SIZE = sizeof( BTF_Header_t );
 inline constexpr size_t     BTF_SUBIMAGE_SIZE = sizeof( BTF_SubImage_t );
+
+static_assert( std::is_standard_layout_v<BTF_Header_t> );
+static_assert( sizeof(BTF_Header_t) == 36ul );
 
 #endif //!__BTF_STRUCTURES_HPP__

@@ -313,7 +313,7 @@ BTFTexture::~BTFTexture( void )
 {
 }
 
-std::shared_ptr<gli::texture> BTFTexture::GetTexture(void) const
+std::shared_ptr<gli::texture> BTFTexture::GetTexture(void) const noexcept
 {
     uint32_t                        index = 0;
     gli::target                     target;

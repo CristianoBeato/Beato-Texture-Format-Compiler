@@ -28,7 +28,7 @@ public:
     BTFTexture( void );
     ~BTFTexture( void );
 
-    std::shared_ptr<gli::texture>   GetTexture( void ) const;
+    std::shared_ptr<gli::texture>   GetTexture( void ) const noexcept;
     bool                            SetTexture( const std::shared_ptr<gli::texture> &in_source );     
 
 protected:

@@ -52,7 +52,6 @@ public:
  
 private:
     std::shared_ptr<gli::texture>   m_texture;
-
 };
 
 #endif //!__IMAGE_LOADER_HPP__
