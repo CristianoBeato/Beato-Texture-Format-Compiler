@@ -22,19 +22,61 @@
 #ifndef __MAIN_HPP__
 #define __MAIN_HPP__
 
+class crImageSource
+{
+public:
+    crImageSource( void );
+    ~crImageSource( void );
+
+    /// @brief 
+    /// @param in_file 
+    /// @return 
+    bool    Open( const std::string &in_file );
+    
+    /// @brief 
+    /// @param in_file 
+    /// @return 
+    bool    Save( const std::string &in_file );
+    
+    /// @brief 
+    /// @param in_file 
+    /// @return 
+    bool    Export( const std::string &in_file );
+
+    /// @brief 
+    /// @param in_file 
+    /// @return 
+    bool    Import( const std::string &in_file );
+
+    /// @brief
+    /// @param
+    /// @return
+    bool    ConvertFormat( const format_t in_format );
+
+    /// @brief
+    /// @param
+    /// @return
+    bool    GenerateMipMaps( void );
+
+private:
+    /// 
+    std::shared_ptr<gli::texture>   m_texture;
+};
+
 class crMainApp
 {
 public:
-    crMainApp( void );
+    crMainApp( int argc, char *argv[] );
     ~crMainApp( void );
 
-    void    Run( std::stringstream &in_cmdargs );
+    void    Run( void );
 
 private:
-    uint8_t         m_state;
-    SDL::Mutex      m_renderLock;
-    SDL::Thread     m_renderThread;
-    gl::Context*    m_renderContext;
+    uint8_t                     m_state;
+    std::vector<std::string>    m_cmdline;
+    SDL::Mutex                  m_renderLock;
+    SDL::Thread                 m_renderThread;
+    gl::Context*                m_renderContext;
 
     /// @brief Initialize GUI 
     void    Init( void );
@@ -60,8 +102,6 @@ private:
 private:
     crMainApp( const crMainApp& ) = delete;
     crMainApp operator =( const crMainApp& ) = delete;
-
-
 };
 
 #endif //!__MAIN_HPP__

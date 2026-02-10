@@ -26,6 +26,10 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
+#include <gli/gli.hpp>
+#include <gli/sampler.hpp>
+#include <gli/generate_mipmaps.hpp>
+
 static const char* k_NOGUI      = "--nogui";
 static const char* k_IMPORT     = "--import";
 static const char* k_IMPORTR    = "-i";
@@ -48,6 +52,7 @@ static const char* k_HELP_TEXT =
     "--output or -o output texture\n"
     "--load   or -l input texture for export\n"
     "--sRGB   or -s export texture in sRGB color"
+    "--dump         print input texture ( --load ) properties\n"
     "--list         list suported formats and number index\n"
     "--help         print help\n"
 };
@@ -79,24 +84,106 @@ formats_info[FORMAT_COUNT]
     { FORMAT_EAC,       "EAC",      "8 bits per pixel (bpp), 4×4 block, 2 components ( RG ), high precision (11 bits per channel)" }
 };
 
-crMainApp::crMainApp( void ) :
+crImageSource::crImageSource( void )
+{
+}
+
+crImageSource::~crImageSource( void )
+{
+}
+
+bool crImageSource::Open(const std::string &in_file)
+{
+    return false;
+}
+
+bool crImageSource::Save(const std::string &in_file)
+{
+    return false;
+}
+
+bool crImageSource::Export(const std::string &in_file)
+{
+    return false;
+}
+
+bool crImageSource::Import(const std::string &in_file)
+{
+    return false;
+}
+
+bool crImageSource::ConvertFormat(const format_t in_format)
+{
+    return false;
+}
+
+template<typename textureType>
+static inline bool MipMapTexture( std::shared_ptr<gli::texture> &texture )
+{
+    // Try converting the base pointer to the specified type.
+    std::shared_ptr<textureType> texture_ptr = std::static_pointer_cast<textureType>( texture );
+    if ( !texture_ptr )
+        return false;
+
+    // Generates the new texture (with mipmaps) on the CPU
+    // This function returns a new, complete gli::textureNd object
+    auto mipmaps = gli::generate_mipmaps( *texture_ptr, gli::FILTER_LINEAR );
+
+    // Create a new shared_ptr and replace the old one
+    // This ensures that m_texture now points to the texture with mipmaps
+    texture = std::make_shared<textureType>( std::move( mipmaps ) );
+
+    // success
+    return true;
+}
+
+
+bool crImageSource::GenerateMipMaps(void)
+{
+    gli::target target = m_texture->target();    
+    switch ( target )
+    {
+        case gli::TARGET_1D:
+            return MipMapTexture<gli::texture1d>( m_texture );
+        case gli::TARGET_1D_ARRAY:
+            return MipMapTexture<gli::texture1d_array>( m_texture );
+        case gli::TARGET_2D:
+            return MipMapTexture<gli::texture2d>( m_texture );
+        case gli::TARGET_2D_ARRAY:
+            return MipMapTexture<gli::texture2d_array>( m_texture );
+        case gli::TARGET_3D:
+            return MipMapTexture<gli::texture3d>( m_texture );
+        case gli::TARGET_CUBE:
+            return MipMapTexture<gli::texture_cube>( m_texture );
+        case gli::TARGET_CUBE_ARRAY:
+            return MipMapTexture<gli::texture_cube_array>( m_texture );
+    }
+
+    /// never get here
+    return false;
+}
+
+crMainApp::crMainApp( int argc, char *argv[] ) :
     m_state( 0 ),
     m_renderContext( nullptr )
 {
+    /// aquire comand line arguments
+    for ( int i = 0; i < argc; i++)
+    { 
+        m_cmdline.push_back( argv[i] );
+    }
 }
 
 crMainApp::~crMainApp( void )
 {
 }
 
-void crMainApp::Run( std::stringstream &in_cmdargs )
+void crMainApp::Run( void )
 {
     bool noGUI = false;
-    std::string cmd;
 
-    while (  in_cmdargs >> cmd )
-    {
-        // disable program in GUI mode 
+    for ( auto cmd : m_cmdline )
+    {        // disable program in GUI mode 
         if ( cmd.compare( k_NOGUI ) == 0 )
         {
             noGUI = true;
@@ -206,7 +293,7 @@ void crMainApp::ListFormatText(void)
 {
     for (size_t i = 0; i < FORMAT_COUNT; i++)
     {
-        std::cout << formats_info[i].id << " " << formats_info[i].name << "\t" << formats_info[i].desc << std::endl;
+        std::cout << formats_info[i].id << "\t" << formats_info[i].name << "\t\t" << formats_info[i].desc << std::endl;
     }
 }
 
@@ -219,21 +306,12 @@ int crMainApp::RendererEntryPoint(void *in_entry)
     return 0;
 }
 
-int main(int argc, char *argv[])
+int main( int argc, char *argv[] )
 {
-    bool noGUI = false;
-    std::stringstream cmdargs;
-
-    /// aquire comand line arguments
-    for ( int i = 0; i < argc; i++)
-    {
-        cmdargs <<  argv[i];
-    }
-    
     try
     {
-            crMainApp app = crMainApp();
-            app.Run( cmdargs );
+        crMainApp app = crMainApp( argc, argv );
+        app.Run();
     }
     catch(const std::exception& e)
     {
